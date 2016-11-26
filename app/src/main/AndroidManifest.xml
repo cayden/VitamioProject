@@ -23,7 +23,7 @@
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".VideoViewAnovo" >
+        <activity android:name=".VitamioListActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

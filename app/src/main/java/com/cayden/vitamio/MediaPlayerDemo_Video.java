@@ -19,7 +19,6 @@ package com.cayden.vitamio;
 import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -27,15 +26,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
-
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnBufferingUpdateListener;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnInfoListener;
 import io.vov.vitamio.MediaPlayer.OnPreparedListener;
 import io.vov.vitamio.MediaPlayer.OnVideoSizeChangedListener;
 import io.vov.vitamio.Vitamio;
 
-public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdateListener, OnCompletionListener, OnPreparedListener, OnVideoSizeChangedListener, SurfaceHolder.Callback {
+public class MediaPlayerDemo_Video extends Activity implements OnInfoListener, OnBufferingUpdateListener, OnCompletionListener, OnPreparedListener, OnVideoSizeChangedListener, SurfaceHolder.Callback {
 
 	private static final String TAG = "MediaPlayerDemo_Video";
 	private int mVideoWidth;
@@ -53,7 +52,7 @@ public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdate
 	private static final int STREAM_VIDEO = 5;
 	private boolean mIsVideoSizeKnown = false;
 	private boolean mIsVideoReadyToBePlayed = false;
-	String UDP_TS="udp://@10.1.6.24:6666";
+	String UDP_TS="udp://@239.0.1.2:6666";
 	String ROOT_SDCARD_DIR = Environment.getExternalStorageDirectory().getPath()+"/";
 	/**
 	 * 
@@ -67,9 +66,9 @@ public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdate
 		mPreview = (SurfaceView) findViewById(R.id.surface);
 		holder = mPreview.getHolder();
 		holder.addCallback(this);
-		holder.setFormat(PixelFormat.RGB_565);
+		holder.setFormat(PixelFormat.RGBA_8888);
 		extras = getIntent().getExtras();
-
+		Log.d(TAG, "onCreate :" );
 	}
 
 	private void playVideo(Integer Media) {
@@ -82,6 +81,9 @@ public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdate
 				 * TODO: Set the path variable to a local media file path.
 				 */
 				path=ROOT_SDCARD_DIR+"xiyouji.mp4";
+//				path="http://pl.youku.com/playlist/m3u8?ts=1394676342&keyframe=0&vid=XNjU4MTc0Mjky&type=mp4";
+//				path="http://gslb.miaopai.com/stream/3D~8BM-7CZqjZscVBEYr5g__.mp4";
+//				path="http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
 				if (path == "") {
 					// Tell the user to provide a media file URL.
 					Toast.makeText(MediaPlayerDemo_Video.this, "Please edit MediaPlayerDemo_Video Activity, " + "and set the path variable to your media file path." + " Your media file must be stored on sdcard.", Toast.LENGTH_LONG).show();
@@ -111,29 +113,35 @@ public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdate
 			}
 			Log.e(TAG, "path: " + path);
 			// Create a new media player and set the listeners
-			mMediaPlayer = new MediaPlayer(this);
+			mMediaPlayer = new MediaPlayer(this,true);
 			mMediaPlayer.setDataSource(path);
 			mMediaPlayer.setDisplay(holder);
 			mMediaPlayer.prepareAsync();
+			Log.e(TAG, "prepare: " + path);
+			mMediaPlayer.setOnInfoListener(this);
 			mMediaPlayer.setOnBufferingUpdateListener(this);
+			Log.e(TAG, "setOnBufferingUpdateListener: " );
 			mMediaPlayer.setOnCompletionListener(this);
 			mMediaPlayer.setOnPreparedListener(this);
 			mMediaPlayer.setOnVideoSizeChangedListener(this);
+			mMediaPlayer.getMetadata();//在播放网络流媒体时。
 			setVolumeControlStream(AudioManager.STREAM_MUSIC);
+			Log.e(TAG, "setVolumeControlStream: " );
 		} catch (Exception e) {
 			Log.e(TAG, "error: " + e.getMessage(), e);
 		}
 	}
-
+	@Override
 	public void onBufferingUpdate(MediaPlayer arg0, int percent) {
 		 Log.d(TAG, "onBufferingUpdate percent:" + percent);
 
 	}
-
+	@Override
 	public void onCompletion(MediaPlayer arg0) {
 		Log.d(TAG, "onCompletion called");
 	}
 
+	@Override
 	public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
 		Log.v(TAG, "onVideoSizeChanged called");
 		if (width == 0 || height == 0) {
@@ -148,9 +156,19 @@ public class MediaPlayerDemo_Video extends Activity implements OnBufferingUpdate
 		}
 	}
 
+	@Override
+	public boolean onInfo(MediaPlayer mp, int what, int extra) {
+		Log.i(TAG,"~~~~~onInfo~~~~~~what="+what+",extra="+extra+"--"+mp.isPlaying());
+		return true;
+	}
+	@Override
 	public void onPrepared(MediaPlayer mediaplayer) {
 		Log.d(TAG, "onPrepared called");
 		mIsVideoReadyToBePlayed = true;
+		mediaplayer.setBufferSize(512*1024);
+		mediaplayer.setAdaptiveStream(true);
+		mediaplayer.setVideoQuality(MediaPlayer.VIDEOQUALITY_LOW);
+
 		if (mIsVideoReadyToBePlayed && mIsVideoSizeKnown) {
 			startVideoPlayback();
 		}

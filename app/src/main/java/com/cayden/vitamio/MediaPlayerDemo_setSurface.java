@@ -22,6 +22,7 @@ import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
@@ -45,7 +46,7 @@ public class MediaPlayerDemo_setSurface extends Activity implements OnBufferingU
   private TextureView mTextureView;
   private String path;
   private Surface surf;
-  
+  String ROOT_SDCARD_DIR = Environment.getExternalStorageDirectory().getPath()+"/";
   private boolean mIsVideoSizeKnown = false;
   private boolean mIsVideoReadyToBePlayed = false;
 
@@ -69,6 +70,7 @@ public class MediaPlayerDemo_setSurface extends Activity implements OnBufferingU
     try {
 
       path = "";
+      path=ROOT_SDCARD_DIR+"xiyouji.mp4";
       if (path == "") {
         // Tell the user to provide a media file URL.
         Toast.makeText(

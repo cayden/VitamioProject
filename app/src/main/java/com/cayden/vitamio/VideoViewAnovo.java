@@ -18,7 +18,6 @@ package com.cayden.vitamio;
 
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.EditText;
@@ -66,8 +65,8 @@ public class VideoViewAnovo extends Activity {
 			 * Alternatively,for streaming media you can use
 			 * mVideoView.setVideoURI(Uri.parse(URLstring));
 			 */
-//			mVideoView.setVideoPath(path);
-			mVideoView.setVideoURI(Uri.parse(UDP_TS));
+			mVideoView.setVideoPath(path);
+//			mVideoView.setVideoURI(Uri.parse(UDP_TS));
 			mVideoView.setHardwareDecoder(true);
 			mVideoView.setMediaController(new MediaController(this));
 			mVideoView.requestFocus();
