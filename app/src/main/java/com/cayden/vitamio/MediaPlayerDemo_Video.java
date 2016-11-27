@@ -111,22 +111,22 @@ public class MediaPlayerDemo_Video extends Activity implements OnInfoListener, O
 				break;
 
 			}
-			Log.e(TAG, "path: " + path);
+			Log.d(TAG, "path: " + path);
 			// Create a new media player and set the listeners
 			mMediaPlayer = new MediaPlayer(this,true);
 			mMediaPlayer.setDataSource(path);
 			mMediaPlayer.setDisplay(holder);
-			mMediaPlayer.prepareAsync();
-			Log.e(TAG, "prepare: " + path);
+			mMediaPlayer.prepare();
+			Log.d(TAG, "prepare: " + path);
 			mMediaPlayer.setOnInfoListener(this);
 			mMediaPlayer.setOnBufferingUpdateListener(this);
-			Log.e(TAG, "setOnBufferingUpdateListener: " );
+			Log.d(TAG, "setOnBufferingUpdateListener: " );
 			mMediaPlayer.setOnCompletionListener(this);
 			mMediaPlayer.setOnPreparedListener(this);
 			mMediaPlayer.setOnVideoSizeChangedListener(this);
 			mMediaPlayer.getMetadata();//在播放网络流媒体时。
 			setVolumeControlStream(AudioManager.STREAM_MUSIC);
-			Log.e(TAG, "setVolumeControlStream: " );
+			Log.d(TAG, "setVolumeControlStream: " );
 		} catch (Exception e) {
 			Log.e(TAG, "error: " + e.getMessage(), e);
 		}
@@ -165,7 +165,7 @@ public class MediaPlayerDemo_Video extends Activity implements OnInfoListener, O
 	public void onPrepared(MediaPlayer mediaplayer) {
 		Log.d(TAG, "onPrepared called");
 		mIsVideoReadyToBePlayed = true;
-		mediaplayer.setBufferSize(512*1024);
+		mediaplayer.setBufferSize(512l);
 		mediaplayer.setAdaptiveStream(true);
 		mediaplayer.setVideoQuality(MediaPlayer.VIDEOQUALITY_LOW);
 
